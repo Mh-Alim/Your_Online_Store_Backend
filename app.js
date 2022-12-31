@@ -8,9 +8,11 @@ app.use(cookieParser());
 
 // ROUTE IMPORTS 
 const productRoute = require("./Routes/productRoutes");
-const userRotute = require("./Routes/userRoutes")
+const userRoute = require("./Routes/userRoutes")
+const shopRoute = require("./Routes/shopRoutes");
 app.use("/api/v1",productRoute);
-app.use("/api/v1",userRotute);
+app.use("/api/v1",userRoute);
+app.use("/api/v1",shopRoute)
 
 
 

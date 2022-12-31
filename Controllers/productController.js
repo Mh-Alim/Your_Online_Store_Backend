@@ -6,7 +6,7 @@ const ApiFeature = require("../utils/apiFeatures");
 
 // SHOP OWNER ROUTE
 exports.createProduct = catchAsyncErrors( async (req,res,next)=>{
-    req.body.user = req.user._id;
+    req.body.shop = req.shop._id;
     console.log(req.body)
     const product = await Product.create(req.body);
 
@@ -17,15 +17,27 @@ exports.createProduct = catchAsyncErrors( async (req,res,next)=>{
 })
 
 
-exports.getAllProduct = catchAsyncErrors( async (req,res)=>{
-    const resultPerPage = 5;
-    const productCount = await Product.countDocuments();
-    const apiFeature = new ApiFeature(Product,req.query).search().filter().pagination(resultPerPage);
-    const products = await apiFeature.query;
+
+
+exports.getAllProduct = catchAsyncErrors( async (req,res,next)=>{
+
+    const resultPerPage = 8;
+    const productsCount = await Product.countDocuments();
+    let apiFeature = new ApiFeature(Product,req.query).search().filter();
+
+    let products = await apiFeature.query.clone();
+    let filteredProductsCount = products.length;
+
+    apiFeature.pagination(resultPerPage);
+
+
+    products = await apiFeature.query;
     res.status(200).json({
         success : true,
         products,
-        productCount
+        productsCount,
+        resultPerPage,
+        filteredProductsCount
     })
 })
 
@@ -36,7 +48,11 @@ exports.updateProduct = catchAsyncErrors( async(req,res,next)=>{
     if(!product){
         return next(new ErrorHandler("Product not found!!",404));
     }
+ 
 
+    if(product.shop != req.shop._id.toString()){
+        return next(new ErrorHandler("This product not belongs to this shop",400));
+    }
     product = await Product.findByIdAndUpdate(req.params.id,req.body,{
         new : true,
         runValidators: true,
@@ -58,7 +74,9 @@ exports.deleteProduct = catchAsyncErrors( async(req,res)=>{
     if(!product){
         return next(new ErrorHandler("Product not found!!",404));
     }
-
+    if(product.shop != req.shop._id.toString()){
+        return next(new ErrorHandler("This product not belongs to this shop",400));
+    }
 
     await product.remove();
 

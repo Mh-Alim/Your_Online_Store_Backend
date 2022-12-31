@@ -14,7 +14,7 @@ exports.sendToken = async(user,statusCode,res)=>{
     res.cookie("token",token,options);
     res.status(200).json({
         success : true,
-        user,
+        info : user,
         token
     })
 }
