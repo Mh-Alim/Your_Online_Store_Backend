@@ -1,5 +1,6 @@
 const app = require("./app");
 const connectDB = require("./db");
+const cloudinary = require("cloudinary")
 
 // DOTENV
 const dotenv = require("dotenv");
@@ -14,6 +15,18 @@ process.on("uncaughtException",(err)=>{
 // CONNECT DB
 connectDB();
 
+
+
+// CLOUDINARY SETUP
+
+cloudinary.config({
+    cloud_name : process.env.CLOUD_NAME,
+    api_key : process.env.CLOUDINARY_API_KEY,
+    api_secret : process.env.CLOUDINARY_API_SECRET
+})
+
+
+
 const server = app.listen(process.env.PORT,()=>{
     console.log(`server is running on ${process.env.PORT}`)
 })
@@ -27,3 +40,4 @@ process.on("unhandledRejection",(err)=>{
         process.exit(1)
     });
 })
+

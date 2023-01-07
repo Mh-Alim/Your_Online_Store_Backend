@@ -3,6 +3,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const customErroHandler = (err,req,res,next)=>{
 
     // Wrong mongodb id error
+    // console.log(err)
     if(err.name === "CastError"){
         const message = `Resourses not found. Invalid : ${err.path}`
         err = new ErrorHandler(message,400);
@@ -28,7 +29,7 @@ const customErroHandler = (err,req,res,next)=>{
     
     err.message = err.message || "Internal Server Error ";
     err.statusCode = err.statusCode || 500;
-
+    
     res.status(err.statusCode).json({
         success : false,
         message : err.message,

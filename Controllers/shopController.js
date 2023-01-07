@@ -29,7 +29,11 @@ exports.registerShop = catchAsyncErrors( async(req,res,next)=>{
         }
 
     });
-    sendToken(shop,201,res);
+    res.status(200).json({
+        success : true,
+        message : "shop is created ",
+        shop
+    })
 });
 
 
@@ -152,3 +156,27 @@ exports.updateShopPassword = async(req,res,next)=>{
     await shop.save();
     sendToken(shop,200,res);
 }
+
+
+// UPDATE SHOP PROFILE 
+
+
+exports.updateShopProfile = catchAsyncErrors(async(req,res,next)=>{
+    const newShopData = {
+        name : req.body.name,
+        email : req.body.email,
+    }
+
+    // add cloudanry later,
+
+    const shop = await Shop.findByIdAndUpdate(req.shop._id,newShopData``,{
+        new : true,
+        runValidators : true,
+        useFindAndModify : false,
+    });
+
+    res.status(200).json({
+        success : true,
+        shop
+    })
+});
