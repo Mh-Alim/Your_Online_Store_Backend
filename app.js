@@ -14,9 +14,13 @@ app.use(fileUpload())
 const productRoute = require("./Routes/productRoutes");
 const userRoute = require("./Routes/userRoutes")
 const shopRoute = require("./Routes/shopRoutes");
+const orderRoute = require("./Routes/orderRoutes");
+const paymentRoute = require("./Routes/paymentRoutes");
 app.use("/api/v1",productRoute);
 app.use("/api/v1",userRoute);
-app.use("/api/v1",shopRoute)
+app.use("/api/v1",shopRoute);
+app.use("/api/v1",orderRoute);
+app.use("/api/v1",paymentRoute);
 
 
 
