@@ -29,19 +29,19 @@ exports.AuthorizeRoles = (...roles)=>{
 }
 
 
-exports.isAuthenticateShop = catchAsyncErrors(async(req,res,next)=>{
-    const {token} = req.cookies;
+// exports.isAuthenticateShop = catchAsyncErrors(async(req,res,next)=>{
+//     const {token} = req.cookies;
 
-    if(!token){
-        return next(new ErrorHandler("Login to access this resource",401));
-    }
+//     if(!token){
+//         return next(new ErrorHandler("Login to access this resource",401));
+//     }
 
-    const decodedData = await jwt.verify(token,process.env.JWT_SECRET_KEY);
-    if(!decodedData) return next(new ErrorHandler("incorrect token",400));
+//     const decodedData = await jwt.verify(token,process.env.JWT_SECRET_KEY);
+//     if(!decodedData) return next(new ErrorHandler("incorrect token",400));
 
 
-    let shopExist = await Shop.findById(decodedData.id);
-    if(!shopExist) return next(new ErrorHandler("You are not authorized to access this resource",403));
-    req.shop = shopExist;
-    next();
-});
+//     let shopExist = await Shop.findById(decodedData.id);
+//     if(!shopExist) return next(new ErrorHandler("You are not authorized to access this resource",403));
+//     req.shop = shopExist;
+//     next();
+// });

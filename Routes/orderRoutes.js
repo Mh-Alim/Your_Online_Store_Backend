@@ -1,6 +1,6 @@
 const express = require("express");
 const { newOrder, getSingleOrder, myOrders, getAllOrders, updateOrder, deleteOrder } = require("../Controllers/orderController");
-const { isAuthenticate, AuthorizeRoles, isAuthenticateShop } = require("../middleware/Auth");
+const { isAuthenticate, AuthorizeRoles } = require("../middleware/Auth");
 const router = express.Router();
 
 router.route("/order/new").post(isAuthenticate,newOrder);

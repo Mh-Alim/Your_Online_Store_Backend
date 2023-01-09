@@ -6,7 +6,7 @@ const ApiFeature = require("../utils/apiFeatures");
 
 // SHOP OWNER ROUTE
 exports.createProduct = catchAsyncErrors( async (req,res,next)=>{
-    req.body.shop = req.shop._id;
+    req.body.user = req.user._id;
     console.log(req.body)
     const product = await Product.create(req.body);
 
@@ -49,10 +49,6 @@ exports.updateProduct = catchAsyncErrors( async(req,res,next)=>{
         return next(new ErrorHandler("Product not found!!",404));
     }
  
-
-    if(product.shop != req.shop._id.toString()){
-        return next(new ErrorHandler("This product not belongs to this shop",400));
-    }
     product = await Product.findByIdAndUpdate(req.params.id,req.body,{
         new : true,
         runValidators: true,
@@ -73,9 +69,6 @@ exports.deleteProduct = catchAsyncErrors( async(req,res)=>{
 
     if(!product){
         return next(new ErrorHandler("Product not found!!",404));
-    }
-    if(product.shop != req.shop._id.toString()){
-        return next(new ErrorHandler("This product not belongs to this shop",400));
     }
 
     await product.remove();
@@ -169,7 +162,6 @@ exports.getAllReviews = catchAsyncErrors(async(req,res,next)=>{
 
 exports.deleteReview = catchAsyncErrors(async(req,res,next)=>{
     const productId = req.query.productId;
-    console.log(productId);
     const product = await Product.findById(productId);
     
     if(!product){
