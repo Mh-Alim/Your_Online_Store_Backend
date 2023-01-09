@@ -160,7 +160,7 @@ exports.getAllReviews = catchAsyncErrors(async(req,res,next)=>{
 
     res.status(200).json({
         success : true,
-        reviews : product.reviews
+        review : product.reviews
     })
 });
 
