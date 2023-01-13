@@ -19,8 +19,8 @@ router.route("/me/update").put(isAuthenticate,updateUserProfile);
 
 // This two routes i have to make for shop 
 // it will be like shopowner can see all his users
-router.route("/admin/users").get(isAuthenticate,AuthorizeRoles("Admin"),getAllUsers);
-router.route("/admin/user/:id").get(isAuthenticate,AuthorizeRoles("Admin"),getSingleUser).put(isAuthenticate,AuthorizeRoles("Admin"),updateUserRole).delete(isAuthenticate,AuthorizeRoles("Admin"),deleteUser);
+router.route("/admin/users").get(isAuthenticate,AuthorizeRoles("admin"),getAllUsers);
+router.route("/admin/user/:id").get(isAuthenticate,AuthorizeRoles("admin"),getSingleUser).put(isAuthenticate,AuthorizeRoles("admin"),updateUserRole).delete(isAuthenticate,AuthorizeRoles("admin"),deleteUser);
 
 
 module.exports = router;

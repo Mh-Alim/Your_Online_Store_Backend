@@ -2,10 +2,33 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Product = require("../models/productModel");
 const ErrorHandler = require("../utils/errorHandler");
 const ApiFeature = require("../utils/apiFeatures");
+const cloudinary = require("cloudinary");
 
 
 // SHOP OWNER ROUTE
 exports.createProduct = catchAsyncErrors( async (req,res,next)=>{
+
+    let images = [];
+
+    if(typeof req.body.images === "string"){
+        images.push(req.body.images);
+    }else {
+        images = req.body.images
+    }
+
+    const imagesLinks = [];
+
+    for(let i = 0; i < images.length ;i++){
+        const result = await cloudinary.v2.uploader.upload(images[i],{
+            folder : "products",
+
+        });
+        imagesLinks.push({
+            public_id : result.public_id,
+            url : result.secure_url
+        })
+    }
+    req.body.images = imagesLinks;
     req.body.user = req.user._id;
     console.log(req.body)
     const product = await Product.create(req.body);
@@ -20,7 +43,7 @@ exports.createProduct = catchAsyncErrors( async (req,res,next)=>{
 
 
 exports.getAllProduct = catchAsyncErrors( async (req,res,next)=>{
-
+    console.log("Receiving request at get all proudct ")
     const resultPerPage = 8;
     const productsCount = await Product.countDocuments();
     let apiFeature = new ApiFeature(Product,req.query).search().filter();
@@ -41,9 +64,50 @@ exports.getAllProduct = catchAsyncErrors( async (req,res,next)=>{
     })
 })
 
+// GET ALL PRODUCTS -- ADMIN
+exports.getAdminProducts = catchAsyncErrors( async (req,res,next)=>{
+    const products = await Product.find();
+    res.status(200).json({
+        success : true,
+        products,
+    })
+})
+
 
 exports.updateProduct = catchAsyncErrors( async(req,res,next)=>{
     let product = await Product.findById(req.params.id);
+
+    let images = [];
+
+
+    if(typeof req.body.images === "string"){
+        images.push(req.body.images);
+    }else {
+        images = req.body.images
+    }
+
+    if(images !== undefined){
+        // DELETING IMGAGES FROM CLOUDINARY
+        for(let i = 0 ; i < product.images.length;i++){
+            await cloudinary.v2.uploader.destroy(product.images[i].public_id);
+        }
+
+        // UPLOADING IMAGES IN CLOUDINARY
+        let imageLinks = [];
+        
+        for(let i = 0 ; i < images.length;i++){
+            const result = await cloudinary.v2.uploader.upload(images[i],{
+                folder: "products",
+            });
+            imageLinks.push({
+                public_id : result.public_id,
+                url : result.secure_url
+            })
+            
+        }
+        req.body.images = imageLinks;
+    }
+
 
     if(!product){
         return next(new ErrorHandler("Product not found!!",404));
@@ -64,11 +128,18 @@ exports.updateProduct = catchAsyncErrors( async(req,res,next)=>{
 
 
 exports.deleteProduct = catchAsyncErrors( async(req,res)=>{
+    console.log("delete product request is coming ");
     const product = await Product.findById(req.params.id);
 
 
     if(!product){
         return next(new ErrorHandler("Product not found!!",404));
+    }
+
+    // DELETING IMAGE FROM CLOUDINARY
+
+    for(let i = 0 ; i < product.images.length;i++){
+        await cloudinary.v2.uploader.destroy(product.images[i].public_id);
     }
 
     await product.remove();
@@ -153,7 +224,7 @@ exports.getAllReviews = catchAsyncErrors(async(req,res,next)=>{
 
     res.status(200).json({
         success : true,
-        review : product.reviews
+        reviews : product.reviews
     })
 });
 
@@ -177,10 +248,17 @@ exports.deleteReview = catchAsyncErrors(async(req,res,next)=>{
     reviews.forEach((rev)=>{
         avg += rev.rating;
     });
-    avg /= reviews.length;
+    let ratings = 0;
+
+    if (reviews.length === 0) {
+      ratings = 0;
+    } else {
+      ratings = avg / reviews.length;
+    }
+  
 
 
-    product.ratings = avg;
+    product.ratings = ratings;
     product.numOfReviews = reviews.length;
     product.reviews = reviews;
 

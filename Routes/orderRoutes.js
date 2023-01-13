@@ -9,7 +9,7 @@ router.route("/orders/me").get(isAuthenticate,myOrders);
 
 // ADMIN ROUTES
 
-router.route("/admin/orders").get(isAuthenticate,AuthorizeRoles("Admin"),getAllOrders);
-router.route("/admin/order/:id").put(isAuthenticate,AuthorizeRoles("Admin"),updateOrder).delete(isAuthenticate,AuthorizeRoles("Admin"),deleteOrder)
+router.route("/admin/orders").get(isAuthenticate,AuthorizeRoles("admin"),getAllOrders);
+router.route("/admin/order/:id").put(isAuthenticate,AuthorizeRoles("admin"),updateOrder).delete(isAuthenticate,AuthorizeRoles("admin"),deleteOrder)
 
 module.exports = router;
