@@ -4,6 +4,7 @@ const customErroHandler = require("./middleware/error")
 const cookieParser = require("cookie-parser");
 const fileUpload = require('express-fileupload');
 const bodyParser = require("body-parser")
+const path = require('path');
 
 app.use(express.json());
 app.use(cookieParser());
@@ -25,6 +26,12 @@ app.use("/api/v1",paymentRoute);
 // ERROR MIDDLEWARE -> customErrorHandler
 app.use(customErroHandler)
 
+
+app.use(express.static(path.join(__dirname,"./build")))
+
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname,"./build/index.html"));
+})
 
 
 
